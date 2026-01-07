@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Footer from "./components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,8 +43,8 @@ export const metadata = {
     card: "summary_large_image",
     title: "Key & Chains - Premium Keychains Online Store",
     description: "Shop high-quality keychains online. Unique designs, perfect gifts, fast shipping.",
-    images: ["/og-image.png"], // same OG image for Twitter
-    creator: "@yourTwitterHandle", // optional
+    images: ["/og-image.png"], 
+    creator: "@yourTwitterHandle", 
   },
 };
 
@@ -55,6 +56,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <Footer />
       </body>
     </html>
   );

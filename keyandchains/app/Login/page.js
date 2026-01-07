@@ -92,7 +92,7 @@ export default function AuthPage() {
               <input
                 id="name"
                 placeholder="Full Name"
-                className="w-full mb-4 px-4 py-3 rounded-xl border border-blue-500 text-black placeholder-gray-500 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition"
+                className="w-full mb-4 px-4 py-3 rounded-xl border border-gray-500 text-black placeholder-gray-500 focus:border-gray-700 focus:ring-1 focus:ring-gray-700 outline-none transition"
               />
             )}
 
@@ -100,7 +100,7 @@ export default function AuthPage() {
               id="email"
               type="email"
               placeholder="Email"
-              className="w-full mb-4 px-4 py-3 rounded-xl border border-blue-500 text-black placeholder-gray-500 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition"
+              className="w-full mb-4 px-4 py-3 rounded-xl border border-gray-500 text-black placeholder-gray-500 focus:border-gray-700 focus:ring-1 focus:ring-gray-700 outline-none transition"
             />
 
             <div className="relative mb-4">
@@ -109,12 +109,12 @@ export default function AuthPage() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full mb-4 px-4 py-3 rounded-xl border border-blue-500 text-black placeholder-gray-500 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition"
+                className="w-full mb-4 px-4 py-3 rounded-xl border border-gray-500 text-black placeholder-gray-500 focus:border-gray-700 focus:ring-1 focus:ring-gray-700 outline-none transition"
               />
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
-                className="absolute right-3 mt-6 active:text-blue-700 hover:text-blue-700 -translate-y-1/2"
+                className="absolute right-3 mt-6 active:text-gray-800 hover:text-gray-900 -translate-y-1/2"
               >
                 {showPass ? <EyeOff /> : <Eye />}
               </button>
@@ -123,14 +123,14 @@ export default function AuthPage() {
             <button
               onClick={handleAuth}
               disabled={loading}
-              className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+              className="w-full py-3 bg-black text-white rounded-xl cursor-pointer hover:bg-gray-800 transition"
             >
               {loading ? "Processing..." : isSignup ? "Sign Up" : "Login"}
             </button>
 
             <p
               onClick={() => setIsSignup(!isSignup)}
-              className="mt-6 text-center cursor-pointer text-blue-600"
+              className="mt-6 text-center cursor-pointer hover:underline text-gray-800"
             >
               {isSignup
                 ? "Already have an account? Login"

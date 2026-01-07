@@ -74,16 +74,16 @@ const Navbar = () => {
 
           {/* Large screen links */}
           <div className="hidden md:flex flex-1 justify-center gap-8 text-gray-700 font-semibold">
-            <Link href="/" className="flex items-center gap-1 hover:text-blue-600 transition">
+            <Link href="/" className="flex items-center gap-1 hover:text-gray-900 transition">
               <Home size={18} /> Home
             </Link>
-            <Link href="/KeyChains" className="flex items-center gap-1 hover:text-blue-600 transition">
+            <Link href="/KeyChains" className="flex items-center gap-1 hover:text-gray-900 transition">
               <Key size={18} /> KeyChains
             </Link>
-            <Link href="/Straps" className="flex items-center gap-1 hover:text-blue-600 transition">
+            <Link href="/Straps" className="flex items-center gap-1 hover:text-gray-900 transition">
               <Anchor size={18} /> Straps
             </Link>
-            <Link href="/TrackOrder" className="flex items-center gap-1 hover:text-blue-600 transition">
+            <Link href="/TrackOrder" className="flex items-center gap-1 hover:text-gray-900 transition">
               <Truck size={18} /> Track Order
             </Link>
           </div>
@@ -91,7 +91,7 @@ const Navbar = () => {
           {/* Right side */}
           <div className="flex items-center gap-4">
             {/* Cart Icon (always visible) */}
-            <div className="cursor-pointer text-gray-700 hover:text-blue-600 transition">
+            <div className="cursor-pointer text-gray-700 hover:text-gray-900 transition">
               <ShoppingCart size={24} />
             </div>
 
@@ -100,9 +100,9 @@ const Navbar = () => {
               <div ref={profileRef} className="relative">
                 <div
                   onClick={() => setProfileOpen(!profileOpen)}
-                  className="w-10 h-10 bg-blue-500 text-white rounded-full
+                  className="w-10 h-10 bg-gray-500 text-white rounded-full
                   flex items-center justify-center font-bold text-lg
-                  cursor-pointer hover:bg-blue-600 transition"
+                  cursor-pointer hover:bg-gray-600 transition"
                 >
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
@@ -131,7 +131,7 @@ const Navbar = () => {
             ) : (
               <Link
                 href="/Login"
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
               >
                 Sign In
               </Link>
