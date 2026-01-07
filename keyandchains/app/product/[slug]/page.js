@@ -3,7 +3,9 @@
 import { useParams } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import KeyChainData from "../../Data/keychaindata";
+import { useRouter } from "next/navigation"; // Fixed import
 import Image from "next/image";
+import { useState } from "react";
 
 // Swiper imports
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,29 +17,88 @@ import "swiper/css/pagination";
 const ProductPage = () => {
   const { slug } = useParams();
   const product = KeyChainData().find((item) => item.slug === slug);
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ show: false, type: "", message: "" });
+  const router = useRouter();
 
   if (!product) return <p className="text-center mt-10">Product not found!</p>;
+
+  const handleAddToCart = async (redirect = false) => {
+    setLoading(true);
+    setAlert({ show: false, type: "", message: "" });
+
+    try {
+      const res = await fetch("http://localhost:5000/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: product.id,
+          name: product.name,
+          price: product.finalPrice,
+          description: product.description,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        if (redirect) {
+          router.push("/Cart");
+        } else {
+          setAlert({ show: true, type: "success", message: "✅ Product added to cart!" });
+        }
+      } else {
+        setAlert({ show: true, type: "error", message: `❌ ${data.message || "Failed to add product"}` });
+      }
+    } catch (err) {
+      console.error(err);
+      setAlert({ show: true, type: "error", message: "❌ Server error. Try again later." });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
       <Navbar />
 
+      {alert.show && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="absolute inset-0 bg-black/30"
+            onClick={() => setAlert({ ...alert, show: false })}
+          ></div>
+          <div className="bg-white rounded-xl shadow-lg p-6 z-50 max-w-sm w-full text-center">
+            <p
+              className={`text-lg font-semibold mb-4 ${
+                alert.type === "success" ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {alert.message}
+            </p>
+            <button
+              onClick={() => setAlert({ ...alert, show: false })}
+              className="px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300 transition"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <section className="bg-transparent min-h-screen py-10">
         <div className="max-w-5xl mx-auto px-6">
-          {/* PRODUCT TITLE */}
-          <h1 className="text-2xl sm:text-4xl font-bold mb-6 text-gray-900">{product.name}</h1>
+          <h1 className="text-2xl sm:text-4xl font-bold mb-6 text-gray-900">
+            {product.name}
+          </h1>
 
-          {/* SWIPER GALLERY */}
           <Swiper
             modules={[Navigation, Pagination]}
             navigation
             pagination={{ clickable: true }}
             spaceBetween={20}
             slidesPerView={1}
-            breakpoints={{
-              640: { slidesPerView: 1 },
-              768: { slidesPerView: 2 },
-            }}
+            breakpoints={{ 640: { slidesPerView: 1 }, 768: { slidesPerView: 2 } }}
             className="mb-6"
           >
             {product.gallery.map((img, idx) => (
@@ -55,39 +116,50 @@ const ProductPage = () => {
             ))}
           </Swiper>
 
-          {/* PRICE & ACTION BUTTONS */}
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               {product.discount > 0 ? (
                 <div className="flex items-center gap-3">
-                  <span className="text-xl font-bold text-gray-900">{product.currency} {product.finalPrice}</span>
-                  <span className="line-through text-gray-400">{product.currency} {product.price}</span>
+                  <span className="text-xl font-bold text-gray-900">
+                    {product.currency} {product.finalPrice}
+                  </span>
+                  <span className="line-through text-gray-400">
+                    {product.currency} {product.price}
+                  </span>
                   <span className="text-green-600 font-semibold">-{product.discount}%</span>
                 </div>
               ) : (
-                <span className="text-xl font-bold text-gray-900">{product.currency} {product.finalPrice}</span>
+                <span className="text-xl font-bold text-gray-900">
+                  {product.currency} {product.finalPrice}
+                </span>
               )}
             </div>
 
             <div className="flex gap-4">
-              <button className="px-6 py-3 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 transition">
-                Buy Now
+              <button
+                className="px-6 py-3 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 transition"
+                onClick={() => handleAddToCart(true)}
+                disabled={loading}
+              >
+                {loading ? "Adding..." : "Buy Now"}
               </button>
-              <button className="px-6 py-3 border border-gray-400 text-gray-800 font-semibold rounded-lg hover:bg-gray-100 transition">
-                Add to Cart
+              <button
+                onClick={() => handleAddToCart(false)}
+                disabled={loading}
+                className={`px-6 py-3 border border-gray-400 text-gray-800 font-semibold rounded-lg hover:bg-gray-100 transition ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                {loading ? "Adding..." : "Add to Cart"}
               </button>
             </div>
           </div>
 
-          {/* DESCRIPTION */}
           <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-2 text-gray-800">Description</h2>
-            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-              {product.description}
-            </p>
+            <p className="text-gray-700 leading-relaxed ">{product.description}</p>
           </div>
 
-          {/* TAGS */}
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-2 text-gray-800">Tags</h2>
             <div className="flex flex-wrap gap-2">
@@ -102,17 +174,13 @@ const ProductPage = () => {
             </div>
           </div>
 
-          {/* REVIEWS */}
           <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               Customer Reviews ({product.reviewsCount})
             </h2>
             <div className="flex flex-col gap-4">
               {product.reviews.map((review, idx) => (
-                <div
-                  key={idx}
-                  className="bg-gray-50/50 border border-gray-200 rounded-lg p-4"
-                >
+                <div key={idx} className="bg-gray-50/50 border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-gray-900">{review.name}</h3>
                     <span className="text-yellow-500 font-bold">{'★'.repeat(review.rating)}</span>

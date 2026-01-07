@@ -5,6 +5,8 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit'); 
 const cookieParser = require('cookie-parser');
 const User = require("./controllers/users");
+const Cart = require("./controllers/cart");
+const CheckOut = require("./controllers/checkout");
 
 dotenv.config();
 
@@ -46,6 +48,8 @@ app.use(limiter);
 // Routes
 // ===================
 app.use('/', User); 
+app.use('/', Cart);
+app.use('/', CheckOut);
 
 
 // ===================
