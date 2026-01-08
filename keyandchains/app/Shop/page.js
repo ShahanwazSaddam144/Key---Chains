@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import KeyChainData from "../Data/keychaindata";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Star } from "lucide-react";
 
 const Shop = () => {
   const router = useRouter();
@@ -18,7 +19,8 @@ const Shop = () => {
       .toLowerCase()
       .startsWith(appliedSearch.toLowerCase());
     const matchesCategory =
-      selectedCategory === "" || item.category.toLowerCase() === selectedCategory.toLowerCase();
+      selectedCategory === "" ||
+      item.category.toLowerCase() === selectedCategory.toLowerCase();
     return matchesSearch && matchesCategory;
   });
 
@@ -61,26 +63,32 @@ const Shop = () => {
 
           {/* Category buttons */}
           <div className="flex justify-center items-center flex-wrap sm:flex-row gap-4 sm:gap-6 mt-3">
-            {["Black", "Red", "Blue", "Classy", "Metal", "Personalized", "Pink"].map(
-              (cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-6 py-2 font-semibold transition duration-200 rounded-[10px] border-2 border-white flex items-center gap-2 cursor-pointer
+            {[
+              "Black",
+              "Red",
+              "Blue",
+              "Classy",
+              "Metal",
+              "Personalized",
+              "Pink",
+            ].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-6 py-2 font-semibold transition duration-200 rounded-[10px] border-2 border-white flex items-center gap-2 cursor-pointer
                     ${
                       cat.toLowerCase() === selectedCategory.toLowerCase()
                         ? "bg-gray-800 text-white"
                         : "bg-gray-200 text-gray-900 hover:bg-gray-300"
                     }`}
-                >
-                  {cat === "Black" && "⚫ "}
-                  {cat === "Red" && "🔴 "}
-                  {cat === "Blue" && "🔵 "}
-                  {cat === "Pink" && "🌸 "}
-                  {cat} {/* Text */}
-                </button>
-              )
-            )}
+              >
+                {cat === "Black" && "⚫ "}
+                {cat === "Red" && "🔴 "}
+                {cat === "Blue" && "🔵 "}
+                {cat === "Pink" && "🌸 "}
+                {cat} {/* Text */}
+              </button>
+            ))}
             {/* Reset filter */}
             <button
               onClick={() => setSelectedCategory("")}
@@ -121,6 +129,15 @@ const Shop = () => {
                 <h2 className="font-semibold mt-8 text-gray-900 text-lg">
                   {item.name}
                 </h2>
+
+                <div className="flex items-center gap-2 justify-center mb-2">
+                  <div className="bg-gray-200 p-3 rounded-full">
+                    <h1 className="text-yellow-400">
+                      <Star size={25} />
+                    </h1>
+                    <p className="text-gray-800 font-semibold">{item.rating}</p>
+                  </div>
+                </div>
 
                 <div className="flex flex-wrap gap-2">
                   {item.tags.map((tag, index) => (

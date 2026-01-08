@@ -1,27 +1,37 @@
 "use client";
 
 import Navbar from "@/app/components/Navbar";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-// SWIPER
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
-
-import "swiper/css";
-import "swiper/css/pagination";
+const images = [
+  "/banner1.webp",
+  "/banner2.webp",
+  "/banner3.webp",
+];
 
 const Home_ = () => {
   const router = useRouter();
+  const [currentImage, setCurrentImage] = useState(0);
+
+  // Auto change image every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % images.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
       <Navbar />
 
       {/* HERO SECTION */}
-      <section className="bg-transparent py-16">
+      <section className="bg-transparent py-16 mt-18">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          
           {/* LEFT CONTENT */}
           <div className="space-y-6">
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
@@ -31,88 +41,40 @@ const Home_ = () => {
 
             <p className="text-gray-600 text-lg leading-relaxed">
               Discover premium-quality keys and handcrafted keychains designed
-              for durability, style, and everyday elegance. Perfect for homes,
-              vehicles, and gifting.
+              for durability, style, and everyday elegance.
             </p>
 
             <div className="flex gap-4">
               <button
                 onClick={() => router.push("/Shop")}
-                className="px-6 py-3 bg-black cursor-pointer text-white rounded-lg hover:bg-gray-800 transition"
+                className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
               >
                 Shop Now
               </button>
 
               <button
                 onClick={() => router.push("/categories")}
-                className="px-6 py-3 border cursor-pointer border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition"
+                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition"
               >
                 View Categories
               </button>
             </div>
           </div>
 
-          {/* RIGHT IMAGES */}
-
-          {/* 🔹 DESKTOP GRID (lg+) */}
-          <div className="hidden lg:grid grid-cols-2 gap-4">
-            <div className="relative w-full h-56 rounded-xl overflow-hidden shadow-lg">
+          {/* RIGHT IMAGE (AUTO CHANGE) */}
+          <div className="flex justify-center items-center">
+            <div className="w-72 h-72 rounded-full overflow-hidden shadow-lg transition-all duration-700">
               <Image
-                src="/banner1.webp"
-                alt="Metal keychain"
+                src={images[currentImage]}
+                alt="Keychain"
                 width={200}
                 height={200}
-                className="object-cover"
-              />
-            </div>
-
-            <div className="relative w-full h-56 rounded-xl overflow-hidden shadow-lg">
-              <Image
-                src="/banner2.webp"
-                alt="Luxury keychain"
-                width={200}
-                height={200}
-                className="object-cover"
-              />
-            </div>
-
-            <div className="relative w-full h-56 rounded-xl overflow-hidden shadow-lg col-span-2">
-              <Image
-                src="/banner3.webp"
-                alt="Keys with keychains"
-                width={200}
-                height={200}
-                className="object-cover block m-auto"
+                className="object-cover block m-auto mt-8"
+                priority
               />
             </div>
           </div>
 
-          {/* 🔹 MOBILE / TABLET SWIPER */}
-          <div className="lg:hidden">
-            <Swiper
-              modules={[Pagination, Autoplay]}
-              pagination={{ clickable: true }}
-              autoplay={{ delay: 3000 }}
-              loop
-              className="rounded-xl"
-            >
-              {["/banner1.webp", "/banner2.webp", "/banner3.webp"].map(
-                (img, index) => (
-                  <SwiperSlide key={index}>
-                    <div className="relative w-full h-64 rounded-xl overflow-hidden shadow-lg">
-                      <Image
-                        src={img}
-                        alt={`Keychain ${index + 1}`}
-                        width={200}
-                        height={200}
-                        className="object-cover block m-auto"
-                      />
-                    </div>
-                  </SwiperSlide>
-                )
-              )}
-            </Swiper>
-          </div>
         </div>
       </section>
     </>
