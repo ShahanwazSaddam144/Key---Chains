@@ -3,7 +3,9 @@ const router = express.Router();
 const Orders = require("../Database/orders");
 const nodemailer = require("nodemailer");
 
-// Email transporter
+// ======================
+// EMAIL TRANSPORTER
+// ======================
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -12,7 +14,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// POST /orders
+// ======================
+// CREATE ORDER
+// ======================
 router.post("/orders", async (req, res) => {
   try {
     const {
@@ -24,30 +28,31 @@ router.post("/orders", async (req, res) => {
       country,
       paymentMethod,
       paymentStatus,
-      products, // optional cart items from frontend
+      products = [],
       userEmail,
     } = req.body;
 
-    // Validate required user fields
+    // ----------------------
+    // VALIDATION
+    // ----------------------
     if (!name || !email || !address || !city || !country || !paymentMethod || !userEmail) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required fields",
-      });
+      return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
-    // Calculate total amount if products exist
+    // ----------------------
+    // CALCULATE TOTAL AMOUNT
+    // ----------------------
     let amount = 0;
-    if (Array.isArray(products) && products.length > 0) {
-      for (const item of products) {
-        if (!item.name || !item.price || !item.quantity) {
-          return res.status(400).json({ success: false, message: "Invalid product data" });
-        }
-        amount += item.price * item.quantity;
+    for (const item of products) {
+      if (!item.name || !item.price || !item.quantity) {
+        return res.status(400).json({ success: false, message: "Invalid product data" });
       }
+      amount += item.price * item.quantity;
     }
 
-    // Save order
+    // ----------------------
+    // SAVE ORDER TO MONGODB
+    // ----------------------
     const order = new Orders({
       name,
       email,
@@ -58,25 +63,27 @@ router.post("/orders", async (req, res) => {
       paymentMethod,
       paymentStatus: paymentStatus || "COD",
       amount,
-      products: products || [],
+      products,
       userEmail,
       createdAt: new Date(),
     });
 
     await order.save();
 
-    // Prepare email HTML
+    // ----------------------
+    // PREPARE EMAIL HTML
+    // ----------------------
     let productRows = "";
-    if (products && products.length > 0) {
+    if (products.length > 0) {
       productRows = products
         .map(
           (item, i) => `
-        <tr>
-          <td style="padding:8px;">${i + 1}</td>
-          <td style="padding:8px;">${item.name}</td>
-          <td style="padding:8px;">${item.quantity}</td>
-          <td style="padding:8px;">$${(item.price * item.quantity).toFixed(2)}</td>
-        </tr>`
+          <tr>
+            <td style="padding:8px;">${i + 1}</td>
+            <td style="padding:8px;">${item.name}</td>
+            <td style="padding:8px;">${item.quantity}</td>
+            <td style="padding:8px;">$${(item.price * item.quantity).toFixed(2)}</td>
+          </tr>`
         )
         .join("");
     }
@@ -94,7 +101,7 @@ router.post("/orders", async (req, res) => {
           <p><strong>Total:</strong> $${amount.toFixed(2)}</p>
 
           ${
-            products && products.length > 0
+            products.length > 0
               ? `<h3>Products</h3>
                  <table width="100%" border="1" cellspacing="0" cellpadding="5">
                    <tr><th>#</th><th>Product</th><th>Qty</th><th>Price</th></tr>
@@ -111,13 +118,47 @@ router.post("/orders", async (req, res) => {
       `,
     };
 
+    // send email asynchronously
     transporter.sendMail(mailOptions).catch((err) => console.error("Email error:", err));
 
-    res.status(201).json({ success: true, message: "Order placed successfully", order });
+    // ----------------------
+    // RESPONSE
+    // ----------------------
+    res.status(201).json({
+      success: true,
+      message: "Order placed successfully",
+      order,
+    });
   } catch (err) {
     console.error("Order creation error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+// GET /orders/:id
+router.get("/orders/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userEmail = req.query.userEmail;
+
+    if (!userEmail) return res.status(400).json({ message: "User Email is required" });
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid Order ID" });
+    }
+
+    // Find order by _id and userEmail
+    const order = await Orders.findOne({ _id: mongoose.Types.ObjectId(id), userEmail });
+
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    res.status(200).json(order);
+  } catch (err) {
+    console.error("Order fetch error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 module.exports = router;

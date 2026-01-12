@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 const Cart = () => {
   const router = useRouter();
-  const [user, setUser] = useState(null); // logged-in user
+  const [user, setUser] = useState(null); 
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({ show: false, itemId: null, deleteAll: false });
