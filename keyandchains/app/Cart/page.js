@@ -7,25 +7,44 @@ import { useRouter } from "next/navigation";
 
 const Cart = () => {
   const router = useRouter();
+  const [user, setUser] = useState(null); // logged-in user
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({ show: false, itemId: null, deleteAll: false });
   const [total, setTotal] = useState(0);
   const [checkoutStatus, setCheckoutStatus] = useState({ show: false, success: false, message: "" });
 
-  // Fetch cart items
-  const fetchCart = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/cart");
-      const data = await res.json();
-      const itemsWithQty = data.map(item => ({ ...item, quantity: 1 }));
-      setCartItems(itemsWithQty);
-    } catch (err) {
-      console.error("Failed to fetch cart", err);
-    }
-  };
+  // Fetch logged-in user
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/me", { credentials: "include" });
+        if (!res.ok) return;
+        const data = await res.json();
+        setUser(data); // set user object
+      } catch (err) {
+        console.error("Failed to fetch user", err);
+      }
+    };
+    fetchUser();
+  }, []);
 
-  useEffect(() => { fetchCart(); }, []);
+  // Fetch cart items when user is loaded
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (!user?.email) return;
+      try {
+        const res = await fetch(`http://localhost:5000/cart?userEmail=${encodeURIComponent(user.email)}`);
+        const data = await res.json();
+        if (!Array.isArray(data)) return setCartItems([]);
+        const itemsWithQty = data.map(item => ({ ...item, quantity: item.quantity || 1 }));
+        setCartItems(itemsWithQty);
+      } catch (err) {
+        console.error("Failed to fetch cart", err);
+      }
+    };
+    fetchCart();
+  }, [user]);
 
   // Update total
   useEffect(() => {
@@ -43,48 +62,50 @@ const Cart = () => {
     setLoading(true);
     try {
       const res = await fetch(`http://localhost:5000/cart/${id}`, { method: "DELETE" });
-      if (res.ok) setCartItems(cartItems.filter((item) => item._id !== id));
+      if (res.ok) setCartItems(cartItems.filter(item => item._id !== id));
       setConfirmDelete({ show: false, itemId: null, deleteAll: false });
-    } catch (err) { console.error("Failed to delete item", err); }
-    finally { setLoading(false); }
+    } catch (err) {
+      console.error("Failed to delete item", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Delete all items
   const handleDeleteAll = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/cart", { method: "DELETE" });
+      const res = await fetch(`http://localhost:5000/cart?userEmail=${encodeURIComponent(user.email)}`, { method: "DELETE" });
       if (res.ok) setCartItems([]);
       setConfirmDelete({ show: false, itemId: null, deleteAll: false });
-    } catch (err) { console.error("Failed to delete all items", err); }
-    finally { setLoading(false); }
+    } catch (err) {
+      console.error("Failed to delete all items", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Checkout
   const handleCheckout = async () => {
     if (cartItems.length === 0) return;
     setLoading(true);
-
     try {
       const res = await fetch("http://localhost:5000/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          cartItems.map(item => ({
-            id: item._id,
-            name: item.name,
-            price: item.price,
-            description: item.description,
-            quantity: item.quantity
-          }))
-        )
+        body: JSON.stringify(cartItems.map(item => ({
+          id: item._id,
+          name: item.name,
+          price: item.price,
+          description: item.description,
+          quantity: item.quantity,
+          userEmail: user.email,
+        })))
       });
-
       const data = await res.json();
-
       if (res.ok) {
-        setCartItems([]); // Clear frontend cart
-        router.push("/Checkout"); // Redirect to checkout page
+        setCartItems([]);
+        router.push("/Checkout");
       } else {
         setCheckoutStatus({ show: true, success: false, message: data.message || "Checkout failed!" });
       }
@@ -111,7 +132,7 @@ const Cart = () => {
           ) : (
             <>
               <div className="flex flex-col gap-6">
-                {cartItems.map((item) => (
+                {cartItems.map(item => (
                   <div key={item._id} className="flex justify-between items-start p-5 bg-white shadow rounded-xl hover:shadow-lg transition">
                     <div className="flex flex-col gap-2 w-full">
                       <h2 className="font-semibold text-lg text-gray-900">{item.name}</h2>
@@ -164,7 +185,7 @@ const Cart = () => {
         </div>
       </section>
 
-      {/* Delete Confirmation Popup */}
+      {/* Delete Confirmation */}
       {confirmDelete.show && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="absolute inset-0 bg-black/40" onClick={() => setConfirmDelete({ show: false, itemId: null, deleteAll: false })}></div>
@@ -193,7 +214,7 @@ const Cart = () => {
         </div>
       )}
 
-      {/* Checkout Status Popup */}
+      {/* Checkout Status */}
       {checkoutStatus.show && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="absolute inset-0 bg-black/40"></div>

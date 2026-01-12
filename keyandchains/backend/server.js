@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const User = require("./controllers/users");
 const Cart = require("./controllers/cart");
 const CheckOut = require("./controllers/checkout");
+const Order = require("./controllers/order");
 
 dotenv.config();
 
@@ -50,7 +51,7 @@ app.use(limiter);
 app.use('/', User); 
 app.use('/', Cart);
 app.use('/', CheckOut);
-
+app.use('/', Order);
 
 // ===================
 // MongoDB Connection
