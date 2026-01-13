@@ -17,8 +17,9 @@ const Navbar = () => {
   /* =====================
      LOGOUT
   ===================== */
+
   const handleLogout = async () => {
-    await fetch("http://localhost:5000/logout", {
+    await fetch(`/api/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -33,7 +34,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:5000/me", {
+        const res = await fetch(`/api/me`, {
           credentials: "include",
         });
         if (!res.ok) return;
@@ -58,7 +59,7 @@ const Navbar = () => {
         }
 
         const res = await fetch(
-          `http://localhost:5000/cart?userEmail=${encodeURIComponent(user.email)}`
+          `/api/cart?userEmail=${encodeURIComponent(user.email)}`
         );
 
         if (!res.ok) return;

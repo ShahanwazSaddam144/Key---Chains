@@ -22,7 +22,7 @@ const TrackOrder = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:5000/me", { credentials: "include" });
+        const res = await fetch(`/api/me`, { credentials: "include" });
         if (!res.ok) return;
         const data = await res.json();
         setUser(data);

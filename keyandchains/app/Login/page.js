@@ -23,8 +23,7 @@ export default function AuthPage() {
     const email = document.getElementById("email").value;
     const pass = password;
 
-    const origin = process.env.NEXT_PUBLIC_ORIGIN || "http://localhost:5000";
-    const endpoint = isSignup ? `${origin}/signup` : `${origin}/login`;
+    const endpoint = isSignup ? `/api/auth/signup` : `/api/auth/login`;
 
     try {
       const res = await fetch(endpoint, {

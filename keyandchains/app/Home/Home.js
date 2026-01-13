@@ -1,9 +1,9 @@
 "use client";
 
-import Navbar from "@/app/components/Navbar";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Navbar from "../components/Navbar";
 
 const images = [
   "/banner1.webp",
@@ -11,7 +11,7 @@ const images = [
   "/banner3.webp",
 ];
 
-const Home_ = () => {
+export default function Home_() {
   const router = useRouter();
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -61,7 +61,7 @@ const Home_ = () => {
             </div>
           </div>
 
-          {/* RIGHT IMAGE (AUTO CHANGE) */}
+          {/* RIGHT IMAGE */}
           <div className="flex justify-center items-center">
             <div className="w-72 h-72 rounded-full overflow-hidden shadow-lg transition-all duration-700">
               <Image
@@ -79,6 +79,4 @@ const Home_ = () => {
       </section>
     </>
   );
-};
-
-export default Home_;
+}
