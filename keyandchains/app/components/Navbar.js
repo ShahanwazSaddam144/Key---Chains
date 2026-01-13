@@ -3,7 +3,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Home, Key, Truck, Menu } from "lucide-react";
+import {
+  ShoppingCart,
+  Home,
+  Key,
+  Truck,
+  Menu,
+  CircleQuestionMark,
+} from "lucide-react";
 
 const Navbar = () => {
   const [menu, setMenu] = useState(false);
@@ -17,7 +24,6 @@ const Navbar = () => {
   /* =====================
      LOGOUT
   ===================== */
-
   const handleLogout = async () => {
     await fetch(`/api/auth/logout`, {
       method: "POST",
@@ -61,7 +67,6 @@ const Navbar = () => {
         const res = await fetch(
           `/api/cart?userEmail=${encodeURIComponent(user.email)}`
         );
-
         if (!res.ok) return;
 
         const data = await res.json();
@@ -84,20 +89,24 @@ const Navbar = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <>
+      {/* NAVBAR */}
       <nav className="backdrop-blur-md bg-white border-b border-gray-300 fixed top-0 w-full z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+
+          {/* LOGO */}
           <Link href="/">
             <h1 className="text-gray-900 font-extrabold text-2xl">
               Key & Chains
             </h1>
           </Link>
 
-          {/* Desktop Menu */}
+          {/* DESKTOP MENU */}
           <div className="hidden md:flex flex-1 justify-center gap-8 text-gray-700 font-semibold">
             <Link href="/" className="flex items-center gap-1 hover:text-gray-900">
               <Home size={18} /> Home
@@ -108,14 +117,20 @@ const Navbar = () => {
             <Link href="/TrackOrder" className="flex items-center gap-1 hover:text-gray-900">
               <Truck size={18} /> Track Order
             </Link>
+            <Link href="/FAQ" className="flex items-center gap-1 hover:text-gray-900">
+              <CircleQuestionMark size={18} /> FAQ
+            </Link>
           </div>
 
-          {/* Right Section */}
+          {/* RIGHT SECTION */}
           <div className="flex items-center gap-4">
-            {/* CART ICON */}
-            <Link href="/Cart" className="relative">
-              <ShoppingCart size={24} className="text-gray-700 hover:text-gray-900" />
 
+            {/* CART */}
+            <Link href="/Cart" className="relative">
+              <ShoppingCart
+                size={24}
+                className="text-gray-700 hover:text-gray-900"
+              />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
                   {cartCount}
@@ -123,7 +138,7 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* USER PROFILE */}
+            {/* USER */}
             {user ? (
               <div ref={profileRef} className="relative">
                 <div
@@ -137,7 +152,9 @@ const Navbar = () => {
                   <div className="absolute right-0 mt-4 w-56 bg-white rounded-xl shadow-lg">
                     <div className="px-4 py-3 border-b">
                       <p className="font-semibold">{user.name}</p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
+                      <p className="text-sm text-gray-500">
+                        {user.email}
+                      </p>
                     </div>
                     <button
                       onClick={handleLogout}
@@ -157,7 +174,7 @@ const Navbar = () => {
               </Link>
             )}
 
-            {/* MOBILE MENU */}
+            {/* MOBILE BUTTON */}
             <button onClick={() => setMenu(true)} className="md:hidden">
               <Menu size={30} />
             </button>
@@ -165,21 +182,81 @@ const Navbar = () => {
         </div>
       </nav>
 
+      {/* SPACER */}
       <div className="h-16" />
 
       {/* MOBILE MENU */}
       {menu && (
         <>
-          <div onClick={() => setMenu(false)} className="fixed inset-0 bg-black/50 z-40" />
-          <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
-            <button onClick={() => setMenu(false)} className="absolute top-6 right-6 text-3xl">
-              ×
-            </button>
-            <nav className="flex flex-col gap-8 text-lg font-semibold">
-              <Link href="/" onClick={() => setMenu(false)}>Home</Link>
-              <Link href="/Shop" onClick={() => setMenu(false)}>KeyChains</Link>
-              <Link href="/TrackOrder" onClick={() => setMenu(false)}>Track Order</Link>
-            </nav>
+          <div
+            onClick={() => setMenu(false)}
+            className="fixed inset-0 bg-black/50 z-40"
+          />
+
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="w-[90%] max-w-sm bg-white rounded-2xl shadow-xl p-6 relative">
+
+              <button
+                onClick={() => setMenu(false)}
+                className="absolute top-4 right-4 text-2xl font-bold text-gray-600"
+              >
+                ×
+              </button>
+
+              <h2 className="text-2xl font-extrabold text-center mb-6">
+                Key & Chains
+              </h2>
+
+              <nav className="flex flex-col gap-4 text-gray-700 font-semibold">
+
+                <Link
+                  href="/"
+                  onClick={() => setMenu(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100"
+                >
+                  <Home size={20} /> Home
+                </Link>
+
+                <Link
+                  href="/Shop"
+                  onClick={() => setMenu(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100"
+                >
+                  <Key size={20} /> KeyChains
+                </Link>
+
+                <Link
+                  href="/TrackOrder"
+                  onClick={() => setMenu(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100"
+                >
+                  <Truck size={20} /> Track Order
+                </Link>
+
+                  <Link
+                  href="/FAQ"
+                  onClick={() => setMenu(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100"
+                >
+                  <CircleQuestionMark size={20} /> FAQ
+                </Link>
+
+                <Link
+                  href="/Cart"
+                  onClick={() => setMenu(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100"
+                >
+                  <ShoppingCart size={20} />
+                  Cart
+                  {cartCount > 0 && (
+                    <span className="ml-auto bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
+
+              </nav>
+            </div>
           </div>
         </>
       )}

@@ -3,7 +3,7 @@ import { Github, Laptop, Rocket, Zap } from "lucide-react";
 
 const Footer = () => {
   return (
-    <section className="mt-10 bg-transparent">
+    <section className="mt-auto bg-transparent">
       <footer className="border-t border-gray-300 py-6 flex flex-col items-center gap-3">
 
         {/* TOP: ICONS */}
