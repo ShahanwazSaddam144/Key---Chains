@@ -77,7 +77,7 @@ const CheckoutFormInner = ({ cartItems, userEmail }) => {
       }
 
       // Send order to backend
-      const res = await fetch("http://localhost:5000/orders", {
+      const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -302,7 +302,7 @@ const Checkout = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:5000/me", {
+        const res = await fetch("//api/me", {
           credentials: "include",
         });
         if (!res.ok) return;
@@ -320,8 +320,9 @@ const Checkout = () => {
     const fetchCart = async () => {
       if (!user?.email) return;
       try {
+        
         const res = await fetch(
-          `http://localhost:5000/cart?userEmail=${encodeURIComponent(
+          `/api/cart?userEmail=${encodeURIComponent(
             user.email
           )}`
         );

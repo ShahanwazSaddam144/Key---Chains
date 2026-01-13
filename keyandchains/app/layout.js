@@ -43,8 +43,6 @@ export const metadata = {
     card: "summary_large_image",
     title: "Key & Chains - Premium Keychains Online Store",
     description: "Shop high-quality keychains online. Unique designs, perfect gifts, fast shipping.",
-    images: ["/og-image.png"], 
-    creator: "@yourTwitterHandle", 
   },
 };
 

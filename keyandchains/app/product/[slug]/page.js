@@ -31,7 +31,7 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:5000/me", {
+        const res = await fetch(`/api/me`, {
           credentials: "include",
         });
         if (!res.ok) return;
@@ -58,7 +58,8 @@ const ProductPage = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/cart", {
+     
+      const res = await fetch(`/api/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

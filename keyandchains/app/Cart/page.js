@@ -18,7 +18,7 @@ const Cart = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:5000/me", { credentials: "include" });
+        const res = await fetch("/api/me", { credentials: "include" });
         if (!res.ok) return;
         const data = await res.json();
         setUser(data); // set user object
@@ -34,7 +34,7 @@ const Cart = () => {
     const fetchCart = async () => {
       if (!user?.email) return;
       try {
-        const res = await fetch(`http://localhost:5000/cart?userEmail=${encodeURIComponent(user.email)}`);
+        const res = await fetch(`/api/cart?userEmail=${encodeURIComponent(user.email)}`);
         const data = await res.json();
         if (!Array.isArray(data)) return setCartItems([]);
         const itemsWithQty = data.map(item => ({ ...item, quantity: item.quantity || 1 }));
@@ -61,7 +61,7 @@ const Cart = () => {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/cart/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/cart/${id}`, { method: "DELETE" });
       if (res.ok) setCartItems(cartItems.filter(item => item._id !== id));
       setConfirmDelete({ show: false, itemId: null, deleteAll: false });
     } catch (err) {
@@ -75,7 +75,7 @@ const Cart = () => {
   const handleDeleteAll = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/cart?userEmail=${encodeURIComponent(user.email)}`, { method: "DELETE" });
+      const res = await fetch(`/api/cart?userEmail=${encodeURIComponent(user.email)}`, { method: "DELETE" });
       if (res.ok) setCartItems([]);
       setConfirmDelete({ show: false, itemId: null, deleteAll: false });
     } catch (err) {
@@ -90,7 +90,7 @@ const Cart = () => {
     if (cartItems.length === 0) return;
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/checkout", {
+      const res = await fetch(`/api/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cartItems.map(item => ({
